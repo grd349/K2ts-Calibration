@@ -33,8 +33,8 @@ if __name__ == "__main__":
                 #ts_method.smooth_flux(convolve=False)
                 #F8 = ts_method.corrected_F8(sig_clip=True)
                 method = PS_FLICKER(ds)
-                metric1 = method.get_metric()
-                metric2 = method.get_metric(low_f = 2.0)
+                metric1 = method.get_metric(low_f=0.5, high_f=10.0 )
+                metric2 = method.get_metric(low_f=10.0, high_f=30.0)
                 metric3 = method.get_metric(low_f = 0.5)
                 results.loc[len(results)] = [row.KEPLER_ID, row.NU_MAXRG, \
                                          metric1, metric2, metric3]
@@ -43,11 +43,17 @@ if __name__ == "__main__":
     results.to_csv('calibration_sample.csv', index=False)
     #results = pd.read_csv('calibration_sample.csv')
     fig,ax = plt.subplots()
-    results = results[results.Numax > 0]
-    ax.scatter(results.Numax, results.Metric1, label='Met1', c='r')
-    ax.scatter(results.Numax, results.Metric2, label='Met2', c='b')
-    ax.scatter(results.Numax, results.Metric3, label='Met3', c='g')
+    rg = results[results.Numax > 0]
+    other = results[results.Numax < 0]
+    CS = ax.scatter(rg.Metric1, rg.Metric2, \
+               c=np.log(rg.Numax), cmap='viridis', \
+               vmin=np.log(1.0), s=20)
+    ax.scatter(other.Metric1, other.Metric2, c='k', s=5)
+#    ax.scatter(results.Numax, results.Metric2, label='Met2', c='b')
+#    ax.scatter(results.Numax, results.Metric3, label='Met3', c='g')
     ax.set_xscale('log')
     ax.set_yscale('log')
-    ax.legend()
+    cbar = fig.colorbar(CS)
+    #ax.legend()
     plt.show()
+ 
