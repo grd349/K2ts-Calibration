@@ -16,12 +16,12 @@ if __name__ == "__main__":
     
     x = rg.LogNumax.values
 #    y = np.log(rg.Metric1.values + rg.Metric2.values + rg.Metric3.values)
-    y = np.log(rg.mean3.values / rg.med3.values)
-    res = np.polyfit(x, y, 5)
+    y = np.log(rg.medlf - rg.w100)
+    res = np.polyfit(x, y, 3)
     print(res)
     
     fig = plt.figure()
-    gs = gridspec.GridSpec(1, 2, width_ratios=(4,2))
+    gs = gridspec.GridSpec(2, 2, width_ratios=(4,2), height_ratios=(4,2))
     
     ax1 = fig.add_subplot(gs[0])
 
