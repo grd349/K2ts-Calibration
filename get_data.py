@@ -15,8 +15,14 @@ from K2ps_flicker import PS_FLICKER
 if __name__ == "__main__":
     apo =  APOKASC('APOKASC_cat_v3.1.7.txt')
     data_dir = '/home/davies/Dropbox//K2_seismo_pipes/APOKASC_stars/Data/'
-    results = pd.DataFrame(columns=['KIC', 'Numax', 'Metric1', \
-                                    'Metric2', 'Metric3'])
+    vars_dict = {'Flicker': [['w100', 'mean1', 'med1', 'std1'],[0.5, 288.0, 100]], \
+                 'lowf': [['w1000', 'meanlf', 'medlf', 'stdlf'],[0.5, 10.0, 1000]], \
+                 'lowb': [['w10', 'meanlb', 'medlb', 'stdlb'],[10.0, 20.0, 10]]}
+    cols = 
+    results = pd.DataFrame(columns=['KIC', 'Numax', \
+                                    'w1', 'mean1', 'med1', 'std1', \
+                                    'w2', 'mean2', 'med2', 'std2', \
+                                    'w3', 'mean3', 'med3', 'std3'])
     for key, row in apo.df.iterrows():
         print(row.KEPLER_ID)
         data_file = glob.glob(data_dir + 'kplr*' + \
@@ -33,13 +39,17 @@ if __name__ == "__main__":
                 #ts_method.smooth_flux(convolve=False)
                 #F8 = ts_method.corrected_F8(sig_clip=True)
                 method = PS_FLICKER(ds)
-                metric1 = method.get_metric(low_f=0.5, high_f=10.0 )
-                metric2 = method.get_metric(low_f=10.0, high_f=30.0)
-                metric3 = method.get_metric(low_f = 0.5)
+                w1, mean1, med1, std1 = method.get_metric(low_f=0.5, high_f=10.0 )
+                w2, mean2, med2, std2 = method.get_metric(low_f=10.0, high_f=20.0, white_npts=10)
+                w3, mean3, med3, std3 = method.get_metric(low_f=20.0, high_f=40.0, white_npts=1000)
                 results.loc[len(results)] = [row.KEPLER_ID, row.NU_MAXRG, \
-                                         metric1, metric2, metric3]
+                                             w1, mean1, med2, std1, \
+                                             w2, mean2, med2, std2, \
+                                             w3, mean3, med3, std3]
             except:
                 print("Failed on ", row.KEPLER_ID)
+            if key % 500 == 0: 
+                results.to_csv('calibration_sample.csv', index=False)
     results.to_csv('calibration_sample.csv', index=False)
     #results = pd.read_csv('calibration_sample.csv')
     fig,ax = plt.subplots()

@@ -10,17 +10,14 @@ from astropy.stats import mad_std
 if __name__ == "__main__":
     results = pd.read_csv('calibration_sample.csv')
     results['LogNumax'] = np.log(results.Numax)
-    results['LogMetric1'] = np.log(results.Metric1)
-    results['LogMetric2'] = np.log(results.Metric2)
     print(results.columns)
     rg = results[results.Numax > 0]
     other = results[results.Numax < 0]
     
-    #sns.pairplot(rg, vars=['LogNumax', 'LogMetric1', 'LogMetric2'])
-    
     x = rg.LogNumax.values
-    y = np.log(rg.Metric1.values + rg.Metric2.values + rg.Metric3.values)
-    res = np.polyfit(x, y, 3)
+#    y = np.log(rg.Metric1.values + rg.Metric2.values + rg.Metric3.values)
+    y = np.log(rg.mean3.values / rg.med3.values)
+    res = np.polyfit(x, y, 5)
     print(res)
     
     fig = plt.figure()
