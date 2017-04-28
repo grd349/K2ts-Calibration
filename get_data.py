@@ -15,10 +15,8 @@ from K2ps_flicker import PS_FLICKER
 if __name__ == "__main__":
     apo =  APOKASC('APOKASC_cat_v3.1.7.txt')
     data_dir = '/home/davies/Dropbox//K2_seismo_pipes/APOKASC_stars/Data/'
-    vars_dict = {'Flicker': [['w100', 'mean1', 'med1', 'std1'],[0.5, 288.0, 100]], \
-                 'lowf': [['w1000', 'meanlf', 'medlf', 'stdlf'],[0.5, 10.0, 1000]], \
-                 'lowb': [['w10', 'meanlb', 'medlb', 'stdlb'],[10.0, 20.0, 10]]}
-    cols = ['KIC', 'Numax', 'M']
+    vars_dict = {'Flicker': [['w100', 'mean1'],[0.5, 288.0, 250.0]]}
+    cols = ['KIC', 'Numax', 'M', 'Z']
     for n in vars_dict:
         cols = cols + vars_dict[n][0]
     results = pd.DataFrame(columns=cols)
@@ -34,11 +32,11 @@ if __name__ == "__main__":
                 ds.read_timeseries(sigma_clip=4.0)
                 ds.power_spectrum()
                 method = PS_FLICKER(ds)
-                res = [row.KEPLER_ID, row.NU_MAXRG, row.DR10_S1_MASS]
+                res = [row.KEPLER_ID, row.NU_MAXRG, row.DR10_S1_MASS, row.FE_H_ADOP_COR]
                 for n in vars_dict:
                     tmp = vars_dict[n][1]
-                    w, m, mm, s = method.get_metric(low_f=tmp[0], high_f=tmp[1], white_npts=tmp[2])
-                    res += [w, m, mm, s]
+                    w, m = method.get_metric(low_f=tmp[0], high_f=tmp[1], white=tmp[2])
+                    res += [w, m]
                 results.loc[len(results)] = res
             except:
                 print("Failed on ", row.KEPLER_ID)

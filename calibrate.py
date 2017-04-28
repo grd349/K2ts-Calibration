@@ -16,9 +16,10 @@ if __name__ == "__main__":
     
     x = rg.LogNumax.values
 #    y = np.log(rg.Metric1.values + rg.Metric2.values + rg.Metric3.values)
-    y = np.log10(rg.medlf - rg.w100)
+    y = np.log10(np.abs(rg.mean1 - rg.w100))
+    res1 = np.polyfit(y[x > 0.8], x[x > 0.8], 2)
+    print(res1)
     res = np.polyfit(x[x > 0.8], y[x > 0.8], 2)
-    print(res)
     
     fig = plt.figure()
     gs = gridspec.GridSpec(2, 2, width_ratios=(4,2), height_ratios=(4,2))
@@ -29,7 +30,7 @@ if __name__ == "__main__":
                 alpha=0.5, s=20, label='Data')
     xind = np.linspace(x.min(), x.max(), 100)
     fit = np.poly1d(res)(xind)
-    ax1.plot(xind, fit, 'r--', lw=3, label='Fit {:.2f} x**2 + {:.2f}x + {:.2f}'.format(*res))
+    ax1.plot(xind, fit, 'r--', lw=3, label='Fit {:.4f} x**2 + {:.4f}x + {:.4f}'.format(*res))
     ax1.set_xlabel('Log10(Numax)')
     ax1.set_ylabel('Granulation Metric')
     ax1.legend(loc=3)
